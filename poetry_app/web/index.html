@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>诗笺 · 古诗文查询与笺注</title>
+  <link rel="stylesheet" href="app.css">
+  <script src="settings.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="brand-icon" id="home-button" type="button" title="返回首页并清空搜索" aria-label="返回首页并清空搜索">
+          <span class="seal" aria-hidden="true">笺</span>
+        </button>
+        <div class="topbar-heading">
+          <strong id="topbar-title">诗笺</strong>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-button" id="settings-button" type="button" title="界面设置" aria-label="界面设置">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.2 13.5a7.6 7.6 0 0 0 0-3l1.6-1.2-1.9-3.3-1.9.8a7.7 7.7 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.8a7.7 7.7 0 0 0-2.6 1.5l-1.9-.8-1.9 3.3 1.6 1.2a7.6 7.6 0 0 0 0 3l-1.6 1.2 1.9 3.3 1.9-.8a7.7 7.7 0 0 0 2.6 1.5l.4 2.8h4l.4-2.8a7.7 7.7 0 0 0 2.6-1.5l1.9.8 1.9-3.3-1.6-1.2Z"/></svg>
+        </button>
+        <button class="icon-button" id="output-button" type="button" title="打开导出目录" aria-label="打开导出目录">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.8 7.4h5.1l1.7 2h9.6v8.7a2 2 0 0 1-2 2H5.8a2 2 0 0 1-2-2V7.4Z"/><path d="M3.8 7.4V5.8a2 2 0 0 1 2-2h3.4l1.8 2h7.2a2 2 0 0 1 2 2v1.6"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="home-view" class="view home-view">
+        <div class="home-hero">
+          <p class="eyebrow"><span></span>读其文 · 知其意</p>
+          <h1>寻一首诗，<br><span>见字如面。</span></h1>
+          <p class="hero-copy">输入标题片段，检索原文、译文与笺注。可将整篇导出为文本或精致排版的 PDF。</p>
+
+          <div class="search-shell" id="search-shell">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 4.2 4.2"/></svg>
+            <input id="search-input" type="text" autocomplete="off" spellcheck="false" placeholder="输入标题片段，例如：屈原、赤壁、静夜思" aria-label="按标题检索">
+            <button class="search-clear" id="search-clear" type="button" title="清空" aria-label="清空检索" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+            </button>
+            <kbd>/</kbd>
+          </div>
+
+          <div class="quick-row">
+            <span class="quick-label">试试</span>
+            <button class="quick-chip" type="button" data-query="屈原">屈原</button>
+            <button class="quick-chip" type="button" data-query="赤壁">赤壁</button>
+            <button class="quick-chip" type="button" data-query="静夜思">静夜思</button>
+            <button class="quick-chip" type="button" data-query="滕王阁">滕王阁</button>
+            <button class="quick-chip" type="button" data-query="纳兰">纳兰</button>
+          </div>
+        </div>
+
+        <section class="results-section" id="results-section" hidden>
+          <div class="results-head">
+            <div class="results-summary-wrap">
+              <span id="results-summary" class="results-summary"></span>
+              <span id="results-query" class="results-query"></span>
+            </div>
+            <span class="results-hint">按标题匹配</span>
+          </div>
+          <div id="results-loading" class="results-loading" hidden></div>
+          <div id="results-list" class="results-list"></div>
+          <div id="results-empty" class="empty-state" hidden>
+            <div class="empty-seal">空</div>
+            <h3>没有找到相符的标题</h3>
+            <p>换一个更短的词试试，或检查是否有多余的空格。</p>
+          </div>
+          <div id="results-more" class="results-more" hidden>
+            <button id="load-more" class="soft-button" type="button">加载更多</button>
+          </div>
+        </section>
+
+        <div class="home-note">
+          <span id="meta-count">正在读取数据库…</span>
+          <span class="separator-dot"></span>
+          <span>本地运行 · 离线可用</span>
+          <span class="separator-dot"></span>
+          <button id="home-output-link" class="link-button" type="button">打开导出目录</button>
+        </div>
+      </section>
+
+      <section id="detail-view" class="view detail-view" hidden>
+        <div class="detail-toolbar">
+          <button id="back-button" class="back-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            返回检索
+          </button>
+          <div class="detail-actions">
+            <button id="export-text-button" class="soft-button" type="button">导出 TXT</button>
+            <button id="export-pdf-button" class="primary-button" type="button">导出 PDF</button>
+          </div>
+        </div>
+
+        <div id="detail-loading" class="paper detail-skeleton" hidden>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-meta"></div>
+          <div class="skeleton-rule"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line medium"></div>
+        </div>
+
+        <article id="detail-article" class="paper detail-paper" hidden>
+          <header class="poem-head">
+            <h1 id="poem-title" class="poem-title"></h1>
+            <div class="poem-meta">
+              <span id="poem-dynasty"></span>
+              <span class="meta-dot"></span>
+              <span id="poem-author"></span>
+              <span class="meta-dot"></span>
+              <span id="poem-note-count"></span>
+            </div>
+          </header>
+
+          <div id="title-notes-block" class="title-notes-block" hidden>
+            <div id="title-notes-list" class="note-list"></div>
+          </div>
+
+          <div class="reader-bar">
+            <div class="mode-switch" role="tablist" aria-label="阅读模式">
+              <button class="mode-button" type="button" data-mode="original" role="tab">原文</button>
+              <button class="mode-button" type="button" data-mode="translation" role="tab">原文 · 译文</button>
+              <button class="mode-button" type="button" data-mode="full" role="tab">全文 · 笺注</button>
+            </div>
+            <span id="annotation-pill" class="status-pill"></span>
+          </div>
+
+          <div id="reading" class="reading"></div>
+
+          <div id="appendix-block" class="appendix-block" hidden>
+            <div id="appendix-list" class="note-list"></div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <div id="modal-root" class="modal-root" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
